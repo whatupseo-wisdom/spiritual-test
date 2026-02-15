@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>사랑방 영성 테스트</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    background: #f5f7fb;
+    color: #222;
+  }
+  header {
+    background: linear-gradient(135deg,#6a8cff,#9b7bff);
+    color: white;
+    padding: 22px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .container {
+    padding: 16px;
+    max-width: 700px;
+    margin: auto;
+  }
+  .section {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  h2 { font-size: 18px; margin-bottom: 10px; }
+  .question { margin: 12px 0; }
+  select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 6px;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    background: #6a8cff;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover { opacity: 0.9; }
+
+  /* RESULT CARD */
+  #result { display:none; }
+  .card {
+    border-radius: 20px;
+    padding: 22px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    margin-bottom: 16px;
+  }
+  .card h3 { margin:0; font-size:22px; }
+  .card p { margin:8px 0 0; font-size:16px; }
+  .top3 {
+    background:white;
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.06);
+  }
+</style>
+</head>
+<body>
+<header>🎨 사랑방 영성 색깔 테스트</header>
+<div class="container" id="app"></div>
+
+<div class="container">
+  <button onclick="calculate()">나의 영성 색깔 보기</button>
+</div>
+
+<div class="container" id="result"></div>
+
+<script>
+const sections = {
+  "자연주의": ["나는 자연 속에서 하나님이 가깝게 느껴진다","실내에 오래 있으면 답답하다","자연 속 예배가 더 좋다","자연 속 기도가 행복하다","자연 묵상 활동에 끌린다","자연에서 더 감동된다"],
+  "감각주의": ["오감이 살아있는 예배가 좋다","성찬과 예전적 요소를 좋아한다","아름답지 않으면 집중 어렵다","아름다움 표현에 반응한다","예배 미학 책이 흥미롭다","예술 활동이 신앙에 도움된다"],
+  "전통주의": ["익숙한 예배 형식이 좋다","공동체 신앙이 중요하다","전통과 역사에 끌린다","절기와 상징 사용이 좋다","예배 의식 책이 흥미롭다","신앙 의식 만들기 즐겁다"],
+  "금욕주의": ["혼자 있을 때 집중된다","내 신앙은 내향적이다","침묵과 고독이 좋다","혼자 기도 시간이 즐겁다","침묵 기도 책이 흥미롭다","단순한 삶이 부담 없다"],
+  "행동주의": ["정의를 위해 행동할 때 하나님이 느껴진다","행동 없는 신앙이 답답하다","정의와 용기에 반응한다","사회 참여 활동 중요하다","신앙과 사회 책에 관심 있다","교회를 깨우고 싶다"],
+  "긍휼주의": ["도움 필요한 사람 곁에서 하나님 느낀다","이웃 외면하는 신앙 불편하다","긍휼과 봉사에 마음 움직인다","돕는 순간 하나님의 능력 느낀다","섬김 관련 책 흥미롭다","직접 돕는 일이 좋다"],
+  "열정주의": ["열정적 찬양이 좋다","예배는 생동감 있어야 한다","기쁨과 축제에 반응한다","자유로운 표현이 즐겁다","신앙 체험 이야기 흥미롭다","음악과 예배 자료 선호"],
+  "묵상주의": ["하나님과 친밀한 교제 중요","임재가 느껴지지 않으면 힘들다","사랑과 친밀함 표현에 반응","조용한 교제 시간 즐겁다","관계 중심 신앙 책 흥미롭다","하나님을 사랑의 대상으로 느낀다"],
+  "지성주의": ["신학적 깨달음이 기쁘다","교리와 진리가 중요하다","개념과 진리에 반응한다","깊이 공부할 때 만족","신학 서적 즐겨 읽는다","음악보다 책 선호"]
+};
+
+const colors = {
+  "자연주의":"linear-gradient(135deg,#4facfe,#00f2fe)",
+  "감각주의":"linear-gradient(135deg,#ff9a9e,#fad0c4)",
+  "전통주의":"linear-gradient(135deg,#a18cd1,#fbc2eb)",
+  "금욕주의":"linear-gradient(135deg,#434343,#000000)",
+  "행동주의":"linear-gradient(135deg,#f83600,#f9d423)",
+  "긍휼주의":"linear-gradient(135deg,#43e97b,#38f9d7)",
+  "열정주의":"linear-gradient(135deg,#fa709a,#fee140)",
+  "묵상주의":"linear-gradient(135deg,#667eea,#764ba2)",
+  "지성주의":"linear-gradient(135deg,#30cfd0,#330867)"
+};
+
+const app = document.getElementById("app");
+
+Object.entries(sections).forEach(([name, questions]) => {
+  const sectionDiv = document.createElement("div");
+  sectionDiv.className = "section";
+
+  const title = document.createElement("h2");
+  title.textContent = name + " 영성";
+  sectionDiv.appendChild(title);
+
+  questions.forEach(q => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `
+      <label>${q}</label>
+      <select data-section="${name}">
+        <option value="">점수 선택 (1~5)</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>`;
+    sectionDiv.appendChild(div);
+  });
+
+  app.appendChild(sectionDiv);
+});
+
+function calculate() {
+  const totals = {};
+  Object.keys(sections).forEach(k => totals[k]=0);
+
+  document.querySelectorAll("select").forEach(sel=>{
+    const v = Number(sel.value);
+    if(v) totals[sel.dataset.section]+=v;
+  });
+
+  const sorted = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const top3 = sorted.slice(0,3);
+
+  const resultDiv=document.getElementById("result");
+  resultDiv.style.display="block";
+
+  const main=top3[0];
+
+  resultDiv.innerHTML=`
+    <div class="card" style="background:${colors[main[0]]}">
+      <h3>🎨 나의 영성 색깔</h3>
+      <p style="font-size:26px;font-weight:bold;margin-top:10px;">${main[0]}</p>
+      <p>${main[1]}점</p>
+    </div>
+
+    <div class="top3">
+      <h3>✨ 영성 TOP 3</h3>
+      ${top3.map((t,i)=>`<p>${i+1}. <strong>${t[0]}</strong> — ${t[1]}점</p>`).join("")}
+    </div>
+  `;
+
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
